@@ -1,0 +1,89 @@
+/* Color Palette: 
+   Primary biru: #1b2f66 (Dark Blue) 
+   Secondary merah muda: #d97582 (Rose/Pink Vintage)
+   Background: #f2ede1 (Cream Vintage) 
+*/
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f2ede1; 
+    color: #1b2f66; 
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important; 
+    transition: color 0.3s;
+}
+.navbar .nav-link:hover {
+    color: #f2ede1 !important; 
+}
+
+.nav-link.active {
+    color: #d97582;
+    border-bottom: 2px solid #d97582;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-custom {
+    background-color: #d97582 !important;
+    border-color: #d97582 !important;
+    border-radius: 50px !important;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+}
+
+.btn-outline-dark:hover {
+    color: #f2ede1 !important;
+    background-color: #1b2f66 !important;
+    border-color: #1b2f66 !important;
+}
+
+.btn-outline-secondary {
+    color: #1b2f66; 
+    border-color: #1b2f66;
+}
+
+.btn-outline-secondary:hover {
+    color: #f2ede1 !important;
+    background-color: #1b2f66 !important;
+    border-color: #1b2f66 !important;
+}
+
+.card {
+    border: none; 
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 15px rgba(27, 47, 102, 0.15); 
+}
+
+/* BUAT CARD BERJALAN DI PAGE ABOUT :D */
+.ticker-wrapper {
+    overflow: hidden;
+    width: 100%;
+    padding: 1rem 0;
+}
+
+.ticker {
+    display: flex;
+    gap: 1rem;
+    animation: scroll 30s linear infinite;
+}
+
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}

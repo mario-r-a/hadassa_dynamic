@@ -5,16 +5,30 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * Ambil semua kategori yang memiliki produk
      */
     public function index()
     {
-        //
+        $categories = Category::all();
+
+        // Produk dan foto produk untuk tiap kategori
+        foreach ($categories as $category) {
+            $category->products; // Produk
+            foreach ($category->products as $product) {
+                $product->productPhotos; // Foto produk
+            }
+        }
+
+        // Kirim ke view
+        return view('products', ['categories' => $categories]);
     }
+
 
     /**
      * Show the form for creating a new resource.
