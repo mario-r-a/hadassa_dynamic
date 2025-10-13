@@ -74,12 +74,12 @@
                 </p>
 
                 <div class="d-flex flex-column gap-2 w-100">
-                    <a href="https://www.instagram.com/username" target="_blank" 
+                    <a href="https://www.instagram.com/hadassa.murbaut" target="_blank" 
                     class="btn d-flex align-items-center gap-2 justify-content-center justify-content-lg-start fw-medium w-100"
                     style="background-color:#1b2f66; color:#f2ede1; border-radius: 50px; padding:0.6rem 1.2rem; font-size:1.05rem;">
                         <i class="bi bi-instagram"></i> <span>Instagram</span>
                     </a>
-                    <a href="https://www.facebook.com/username" target="_blank" 
+                    <a href="https://www.facebook.com/tokohadassalumajang" target="_blank" 
                     class="btn d-flex align-items-center gap-2 justify-content-center justify-content-lg-start fw-medium w-100"
                     style="background-color:#1b2f66; color:#f2ede1; border-radius: 50px; padding:0.6rem 1.2rem; font-size:1.05rem;">
                         <i class="bi bi-facebook"></i> <span>Facebook</span>
