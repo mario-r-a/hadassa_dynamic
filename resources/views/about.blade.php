@@ -50,7 +50,6 @@
 
         <div class="ticker-wrapper">
             <div class="ticker">
-                {{--ORI--}}
                 @foreach ($reviews as $review)
                     <div class="card shadow-sm border-0 p-4 me-3" style="min-width: 320px;">
                         <i class="bi bi-quote display-1 text-warning mb-3"></i>
@@ -66,25 +65,9 @@
                         </p>
                     </div>
                 @endforeach
-
-                {{--REPEAT--}}
-                @foreach ($reviews as $review)
-                    <div class="card shadow-sm border-0 p-4 me-3" style="min-width: 320px;">
-                        <i class="bi bi-quote display-1 text-warning mb-3"></i>
-                        <p class="fst-italic text-secondary mb-2">"{{ $review->content }}"</p>
-                        <p class="fw-bold mb-1" style="color:#1b2f66;">- {{ Str::mask($review->name, '*', 1, -1) }}</p>
-                        <p>
-                            @for ($i = 0; $i < $review->rating; $i++)
-                                <i class="bi bi-star-fill text-warning"></i>
-                            @endfor
-                            @for ($i = $review->rating; $i < 5; $i++)
-                                <i class="bi bi-star text-secondary"></i>
-                            @endfor
-                        </p>
-                    </div>
-                @endforeach
-                
             </div>
         </div>
     </div>
 </section>
+
+@endsection
