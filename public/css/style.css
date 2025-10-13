@@ -72,18 +72,24 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 /* BUAT CARD BERJALAN DI PAGE ABOUT :D */
 .ticker-wrapper {
-    overflow: hidden;
-    width: 100%;
-    padding: 1rem 0;
+    overflow: hidden; /* Menyembunyikan bagian yang tidak terlihat */
+    position: relative;
 }
 
 .ticker {
     display: flex;
-    gap: 1rem;
-    animation: scroll 30s linear infinite;
+    animation: scroll-left 10s linear infinite; /* Durasi bisa disesuaikan */
 }
 
-@keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+.card {
+    margin-right: 30px; /* Jarak antar card */
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%); /* Menggerakkan konten ke kiri setengah panjang konten */
+    }
 }
