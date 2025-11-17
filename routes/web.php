@@ -11,7 +11,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Products page
 Route::get('/products', [ProductController::class, 'index'])->name('products');
-Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show'); // optional popup/detail
+//Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show'); // popup detail
 
 // About page
 Route::get('/about', [AboutController::class, 'index'])->name('about');

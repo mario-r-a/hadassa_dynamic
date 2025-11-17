@@ -16,7 +16,7 @@
                                 @foreach ($product->productPhotos as $key => $photo)
                                     <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
                                         <img src="{{ asset('images/products/' . strtolower(str_replace(' ', '', $product->category->name)) . '/detail/' . $photo->image_path) }}"
-                                             class="d-block w-100" alt="{{ $product->name }}" style="height: 150px; object-fit: contain;">
+                                             class="d-block w-100" alt="{{ $product->name }}" style="height: 300px; object-fit: contain;">
                                     </div>
                                 @endforeach
                             </div>
