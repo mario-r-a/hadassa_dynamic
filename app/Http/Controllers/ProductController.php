@@ -23,7 +23,7 @@ class ProductController extends Controller
                     $query->where('status', 'active')
                         ->orWhereHas('category', function($subQuery) {
                             // Membolehkan admin melihat produk apapun
-                            if (Auth::user()->status === 'admin') {
+                            if (Auth::user() && Auth::user()->status === 'admin') {
                                 $subQuery->where('status', '!=', 'inactive');
                             }
                         });
