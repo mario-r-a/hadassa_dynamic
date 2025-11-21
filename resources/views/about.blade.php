@@ -89,7 +89,6 @@
 
     {{-- Jika user sudah membuat review --}}
     @if (auth()->user()->review)
-
         <div class="p-4 my-4 rounded-4 shadow-sm"
              style="background:#e9fff3; border-left:6px solid #28a745; max-width:650px; margin:auto;">
 
@@ -120,7 +119,6 @@
         </div>
 
     @else
-
         {{-- FORM REVIEW --}}
         <div class="card shadow-sm p-4 my-4">
             <h4 class="mb-3">Tulis Review Anda</h4>
@@ -158,7 +156,6 @@
                 <button type="submit" class="btn btn-primary">Kirim Review</button>
             </form>
         </div>
-
     @endif
 
 @elseif(auth()->check() && auth()->user()->status === 'admin')

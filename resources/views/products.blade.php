@@ -53,6 +53,18 @@
                                     <div class="mt-2 fw-bold">Rp{{ number_format($product->price ?? 0, 0, ',', '.') }}</div>
                                 </div>
                             </a>
+
+                            {{-- Tombol Hapus Produk (Hanya untuk admin) --}}
+                            @if(auth()->check() && auth()->user()->status === 'admin')
+                                <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm mt-2">
+                                        <i class="bi bi-trash3"></i> Hapus
+                                    </button>
+                                </form>
+                            @endif
+
                         </div>
                     </div>
                 @empty
@@ -81,6 +93,18 @@
                                         <div class="mt-2 fw-bold">Rp{{ number_format($product->price ?? 0, 0, ',', '.') }}</div>
                                     </div>
                                 </a>
+
+                                {{-- Tombol Hapus Produk (Hanya untuk admin) --}}
+                                @if(auth()->check() && auth()->user()->status === 'admin')
+                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm mt-2">
+                                            <i class="bi bi-trash3"></i> Hapus
+                                        </button>
+                                    </form>
+                                @endif
+
                             </div>
                         </div>
                     @endforeach

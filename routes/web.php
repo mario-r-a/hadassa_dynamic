@@ -77,6 +77,11 @@ Route::middleware(['auth','admin'])->prefix('admin')->group(function () {
     Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])
     ->name('products.toggleStatus');
 
+    // Admin-only route to delete a product
+    Route::middleware(['auth', 'admin'])->group(function () {
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    });
+
 });
 
 

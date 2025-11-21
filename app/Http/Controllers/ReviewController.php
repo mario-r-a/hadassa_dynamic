@@ -15,7 +15,7 @@ class ReviewController extends Controller
             return back()->with('error', 'Anda harus login untuk memberikan review.');
         }
 
-        if (Auth::user()->role === 'admin') {
+        if (Auth::user()->status === 'admin') {
             return back()->with('error', 'Admin tidak dapat membuat review.');
         }
 
@@ -28,7 +28,7 @@ class ReviewController extends Controller
 
         // Validasi input
         $request->validate([
-            'content' => 'required|min:10',
+            'content' => 'required|min:1',
             'rating'  => 'required|integer|min:1|max:5',
         ]);
 

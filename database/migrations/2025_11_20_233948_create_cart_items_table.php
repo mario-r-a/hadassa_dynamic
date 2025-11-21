@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
 
             $table->integer('qty')->default(1);
-            $table->decimal('price', 12, 2); // snapshot harga saat ditambah
+            $table->unsignedBigInteger('price');
 
             $table->timestamps();
         });

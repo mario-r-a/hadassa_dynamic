@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -21,7 +23,7 @@ class ProductController extends Controller
                     $query->where('status', 'active')
                         ->orWhereHas('category', function($subQuery) {
                             // Membolehkan admin melihat produk apapun
-                            if (auth()->user()->status === 'admin') {
+                            if (Auth::user()->status === 'admin') {
                                 $subQuery->where('status', '!=', 'inactive');
                             }
                         });
@@ -68,30 +70,26 @@ class ProductController extends Controller
             $file = $request->file('main_image');
             $filename = time() . '_' . $file->getClientOriginalName();
             
-            // Simpan ke folder public/images/products/{category}/{filename}
-            $category = \App\Models\Category::find($request->category_id);
-            $categoryFolder = strtolower(str_replace(' ', '', $category->name));
-            $filename = time() . '_' . $request->file('main_image')->getClientOriginalName();
-
+            // Simpan ke folder public/products/main/ dengan nama file yang sudah diubah
             $request->file('main_image')->storeAs('products/main', $filename, 'public');
 
-            // Simpan hanya nama file
-            $imagePath = $filename;
-
+            // Simpan path lengkap ke dalam variabel imagePath
+            $imagePath = 'products/main/' . $filename;
         }
 
-        // Buat product
+        // Buat produk baru
         Product::create([
             'category_id' => $request->category_id,
             'name' => $request->name,
             'description' => $request->description,
             'price' => (int) $request->price,
-            'main_image' => $imagePath,
+            'main_image' => $imagePath,  // Simpan path lengkap ke dalam database
         ]);
 
         return redirect()->route('products.index')
             ->with('success', 'Produk berhasil ditambahkan!');
     }
+
 
     public function toggleStatus(Product $product)
     {
@@ -100,4 +98,25 @@ class ProductController extends Controller
 
         return back()->with('success', 'Status produk berhasil diubah.');
     }
+
+    public function destroy(Product $product)
+    {
+        // Cek apakah produk masih ada
+        if ($product) {
+            // Hapus gambar terkait dari storage
+            if (Storage::exists('public/' . $product->main_image)) {
+                Storage::delete('public/' . $product->main_image);
+            }
+
+            // Hapus produk dari database
+            $product->delete();
+
+            // Redirect ke halaman daftar produk dengan pesan sukses
+            return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus!');
+        }
+
+        // Jika produk tidak ditemukan
+        return redirect()->route('products.index')->with('error', 'Produk tidak ditemukan!');
+    }
+
 }
