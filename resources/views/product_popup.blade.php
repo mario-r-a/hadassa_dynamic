@@ -41,7 +41,7 @@
                         <p>{{ $product->description }}</p>
 
                         {{-- *** TOGGLE STATUS (ADMIN ONLY) *** --}}
-                        @if(auth()->check() && auth()->user()->status === 'admin')
+                        {{-- @if(auth()->check() && auth()->user()->status === 'admin')
                             <form action="{{ route('products.toggleStatus', $product->id) }}"
                                   method="POST" class="mb-3">
                                 @csrf
@@ -57,7 +57,7 @@
                                     </button>
                                 @endif
                             </form>
-                        @endif
+                        @endif --}}
 
                         {{-- Tombol Tambah ke Keranjang untuk NON-admin --}}
                         @unless(optional(Auth::user())->status === 'admin')

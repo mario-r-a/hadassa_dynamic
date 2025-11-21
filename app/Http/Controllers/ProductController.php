@@ -91,13 +91,13 @@ class ProductController extends Controller
     }
 
 
-    public function toggleStatus(Product $product)
-    {
-        $product->status = $product->status === 'active' ? 'inactive' : 'active';
-        $product->save();
+    // public function toggleStatus(Product $product)
+    // {
+    //     $product->status = $product->status === 'active' ? 'inactive' : 'active';
+    //     $product->save();
 
-        return back()->with('success', 'Status produk berhasil diubah.');
-    }
+    //     return back()->with('success', 'Status produk berhasil diubah.');
+    // }
 
     public function destroy(Product $product)
     {
