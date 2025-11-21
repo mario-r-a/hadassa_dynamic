@@ -12,7 +12,7 @@
 
         {{-- Search Bar --}}
         <div class="d-flex justify-content-center my-4">
-            <form action="{{ route('products') }}" method="GET" class="d-flex w-75 w-md-50 w-lg-25 gap-2">
+            <form action="{{ route('products.index') }}" method="GET" class="d-flex w-75 w-md-50 w-lg-25 gap-2">
                 <input type="text" placeholder="Cari produk..." name="search"
                        value="{{ request('search') }}" class="form-control rounded-pill px-3 shadow-sm border-0">
                 <button type="submit" class="btn px-4 rounded-pill text-white"

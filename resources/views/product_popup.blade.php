@@ -33,6 +33,16 @@
 
                     <div class="col-md-6">
                         <p>{{ $product->description }}</p>
+
+                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="mt-3">
+                            @csrf
+                            <button type="submit"
+                                    class="btn w-100 py-2 fw-semibold"
+                                    style="background:#1b2f66; color:white; border-radius:10px;">
+                                Tambah ke Keranjang
+                            </button>
+                        </form>
+                        
                     </div>
                 </div>
             </div>

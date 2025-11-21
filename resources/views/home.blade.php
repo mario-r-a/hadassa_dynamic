@@ -24,7 +24,7 @@
         <p class="lead mb-4 mb-md-5 mx-auto text-white" style="max-width:700px;">
             Kualitas terjamin untuk semua kebutuhan peralatan teknik dan mur baut Anda di Lumajang.
         </p>
-        <a href="{{ route('products') }}" class="btn btn-lg shadow-lg px-4 px-md-5 py-2 py-md-3" style="background-color:#d97582; border-color:#d97582; color:#fff;">
+        <a href="{{ route('products.index') }}" class="btn btn-lg shadow-lg px-4 px-md-5 py-2 py-md-3" style="background-color:#d97582; border-color:#d97582; color:#fff;">
             Jelajahi Katalog <i class="bi bi-arrow-right-short"></i>
         </a>
     </div>
@@ -39,7 +39,7 @@
         <div class="row g-4 justify-content-center">
             @foreach ($categories as $category)
                 <div class="col-lg-4 col-md-6 col-12">
-                    <a href="{{ route('products') }}" class="text-decoration-none">
+                    <a href="{{ route('products.index') }}" class="text-decoration-none">
                         <div class="card h-100 shadow-sm text-center">
                             <div class="p-4 bg-white">
                                 <img src="{{ asset('images/products/' . strtolower(str_replace(' ', '', $category->name)) . '/main/' . $category->featured_product->main_image) }}"
@@ -56,7 +56,7 @@
         </div>
 
         <div class="text-center my-5">
-            <a href="{{ route('products') }}" class="btn btn-outline-dark btn-lg rounded-pill px-5">
+            <a href="{{ route('products.index') }}" class="btn btn-outline-dark btn-lg rounded-pill px-5">
                 Lihat Seluruh Katalog Kami
             </a>
         </div>
@@ -64,7 +64,7 @@
 </section>
 
 {{-- REVIEWS SECTION --}}
-@if ($reviews->count())
+@if ($reviews->count() > 0)
 <section class="py-5" style="background-color: #fff3e6;">
     <div class="container text-center">
         <h2 class="mb-5" style="color:#1b2f66;">Kata Pelanggan</h2>
@@ -72,37 +72,54 @@
         <div id="reviewCarousel" class="carousel slide mx-auto" data-bs-ride="carousel" style="max-width:700px;">
             <div class="carousel-inner p-4" style="min-height: 380px;">
                 @foreach ($reviews as $key => $review)
-                    <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">   {{--ini yg buat kita tau mana yg lagi dishow sm carousel--}}
-                        <i class="bi bi-quote display-1 text-warning mb-2"></i>    {{--icon kutipan yg kek quote itu--}}
-                        <p class="lead fst-italic text-secondary mt-3 mb-4 px-2 px-md-5">"{{ $review->content }}"</p>
-                        <p class="fw-bold mb-0" style="color:#1b2f66;">
-                            - {{ Str::mask($review->name, '*', 1, -1) }}   {{--utk masking nama user canggih bet--}}
+                    <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
+                        <i class="bi bi-quote display-1 text-warning mb-2"></i>
+
+                        <p class="lead fst-italic text-secondary mt-3 mb-4 px-2 px-md-5">
+                            "{{ $review->content }}"
                         </p>
+
+                        {{-- name masking dari relasi user --}}
+                        <p class="fw-bold mb-0" style="color:#1b2f66;">
+                            - {{ Str::mask($review->user->name, '*', 1, -1) }}
+                        </p>
+
+                        {{-- rating --}}
                         <p class="text-warning mb-4">
                             @for ($i = 0; $i < $review->rating; $i++)
-                                <i class="bi bi-star-fill small"></i>     {{--icon bintang lumayan canggih la--}}
+                                <i class="bi bi-star-fill small"></i>
                             @endfor
                         </p>
                     </div>
                 @endforeach
             </div>
 
-            <button class="carousel-control-prev" type="button" data-bs-target="#reviewCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color:#1b2f66; border-radius:50%;"></span>
-                <span class="visually-hidden">Previous</span>
+            <button class="carousel-control-prev" type="button"
+                data-bs-target="#reviewCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"
+                    style="background-color:#1b2f66; border-radius:50%;"></span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#reviewCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true" style="background-color:#1b2f66; border-radius:50%;"></span>
-                <span class="visually-hidden">Next</span>
+
+            <button class="carousel-control-next" type="button"
+                data-bs-target="#reviewCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"
+                    style="background-color:#1b2f66; border-radius:50%;"></span>
             </button>
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ route('about') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-4">Lihat selengkapnya</a>
+            <a href="{{ route('about') }}"
+                class="btn btn-sm btn-outline-secondary rounded-pill px-4">Lihat selengkapnya</a>
         </div>
+
     </div>
 </section>
+@else
+<section class="py-5 text-center" style="background-color:#fff3e6;">
+    <h4 class="text-muted mb-0">Belum ada ulasan dari pelanggan.</h4>
+</section>
 @endif
+
 
 {{-- EXTRA FOOTER --}}
 <section class="py-5 text-center" style="background-color: #1b2f66; color:#f2ede1;">

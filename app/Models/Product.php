@@ -14,8 +14,10 @@ class Product extends Model
         'category_id',
         'name',
         'description',
-        'main_image'
+        'main_image',
+        'price'
     ];
+    
 
     // Relation ke Category (many-to-one)
     public function category()
@@ -28,4 +30,10 @@ class Product extends Model
     {
         return $this->hasMany(ProductPhoto::class);
     }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
 }

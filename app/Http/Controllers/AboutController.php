@@ -9,7 +9,9 @@ class AboutController extends Controller
 {
     public function index()
     {
-        $reviews = Review::all(); // Semua review
+        // Semua review + user
+        $reviews = Review::with('user')->orderByDesc('created_at')->get();
+
         return view('about', compact('reviews'));
     }
 }

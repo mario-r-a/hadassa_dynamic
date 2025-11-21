@@ -2,65 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreReviewRequest;
-use App\Http\Requests\UpdateReviewRequest;
+use Illuminate\Http\Request;
 use App\Models\Review;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function store(Request $request)
     {
-        //
-    }
+        // Pastikan user login (harusnya lewat middleware)
+        if (!Auth::check()) {
+            return back()->with('error', 'Anda harus login untuk memberikan review.');
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        // Cek apakah user sudah pernah membuat review
+        $existing = Review::where('user_id', Auth::id())->first();
+        if ($existing) {
+            return back()->with('error', 'Anda sudah pernah memberikan review.');
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreReviewRequest $request)
-    {
-        //
-    }
+        // Validasi input
+        $request->validate([
+            'content' => 'required|min:10',
+            'rating'  => 'required|integer|min:1|max:5',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Review $review)
-    {
-        //
-    }
+        // Simpan review
+        Review::create([
+            'user_id' => Auth::id(),
+            'content' => $request->input('content'),
+            'rating'  => $request->input('rating'),
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Review $review)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateReviewRequest $request, Review $review)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Review $review)
-    {
-        //
+        return back()->with('success', 'Terima kasih! Review Anda berhasil dikirim.');
     }
 }

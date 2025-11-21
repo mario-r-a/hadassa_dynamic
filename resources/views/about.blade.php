@@ -48,13 +48,23 @@
     <div class="container">
         <h2 class="text-center mb-4" style="color:#1b2f66;">Apa Kata Pelanggan</h2>
 
+        @if ($reviews->count())
         <div class="ticker-wrapper">
             <div class="ticker">
-                @foreach ($reviews as $review)
+                @foreach (collect($reviews)->concat($reviews) as $review)
                     <div class="card shadow-sm border-0 p-4 me-3" style="min-width: 320px;">
                         <i class="bi bi-quote display-1 text-warning mb-3"></i>
-                        <p class="fst-italic text-secondary mb-2">"{{ $review->content }}"</p>
-                        <p class="fw-bold mb-1" style="color:#1b2f66;">- {{ Str::mask($review->name, '*', 1, -1) }}</p>
+
+                        <p class="fst-italic text-secondary mb-2">
+                            "{{ $review->content }}"
+                        </p>
+
+                        {{-- masking user name --}}
+                        <p class="fw-bold mb-1" style="color:#1b2f66;">
+                            - {{ Str::mask($review->user->name, '*', 1, -1) }}
+                        </p>
+
+                        {{-- rating --}}
                         <p>
                             @for ($i = 0; $i < $review->rating; $i++)
                                 <i class="bi bi-star-fill text-warning"></i>
@@ -67,7 +77,102 @@
                 @endforeach
             </div>
         </div>
+        @else
+            <p class="text-center text-muted">Belum ada review.</p>
+        @endif
+
     </div>
 </section>
+
+@if (auth()->check() && !auth()->user()->review)
+
+    {{-- FORM REVIEW --}}
+    <div class="card shadow-sm p-4 my-4">
+        <h4 class="mb-3">Tulis Review Anda</h4>
+
+        {{-- Pesan berhasil atau error --}}
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        <form action="{{ route('review.store') }}" method="POST">
+            @csrf
+
+            {{-- Rating --}}
+            <div class="mb-3">
+                <label class="form-label">Rating</label>
+                <select name="rating" class="form-select @error('rating') is-invalid @enderror" required>
+                    <option value="">Pilih Rating</option>
+                    <option value="5">5 - Sangat Puas ★★★★★</option>
+                    <option value="4">4 - Puas ★★★★☆</option>
+                    <option value="3">3 - Cukup ★★★☆☆</option>
+                    <option value="2">2 - Kurang ★★☆☆☆</option>
+                    <option value="1">1 - Buruk ★☆☆☆☆</option>
+                </select>
+                @error('rating')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Content --}}
+            <div class="mb-3">
+                <label class="form-label">Review</label>
+                <textarea name="content" rows="4"
+                    class="form-control @error('content') is-invalid @enderror"
+                    placeholder="Tulis pengalaman Anda..." required>{{ old('content') }}</textarea>
+
+                @error('content')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Kirim Review
+            </button>
+        </form>
+    </div>
+
+@elseif(auth()->check())
+
+    {{-- USER SUDAH PERNAH REVIEW --}}
+    <div class="alert alert-info my-4">
+        Anda sudah memberikan review. Terima kasih!
+    </div>
+
+@else
+
+    {{-- REMINDER LOGIN --}}
+<div class="p-4 rounded-4 shadow-sm my-4 mx-auto"
+    style="background: #f7f9fc; border-left: 6px solid #1b2f66; 
+        max-width: 420px;">
+
+    <div class="d-flex align-items-center">
+        <i class="bi bi-person-lock fs-1 me-3" style="color: #1b2f66;"></i>
+
+        <div>
+            <p class="mb-1 fw-semibold text-center" 
+                style="color:#1b2f66; font-size: 1.1rem;">
+                Anda belum login
+            </p>
+
+            <p class="mb-2 text-secondary text-center">
+                Silakan login terlebih dahulu untuk memberikan review.
+            </p>
+
+            <div class="text-center">
+                <a href="{{ route('login') }}" 
+                    class="btn px-4 py-2"
+                    style="background:#1b2f66; color:white; border-radius:12px;">
+                    Login Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 @endsection
