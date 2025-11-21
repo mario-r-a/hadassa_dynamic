@@ -4,23 +4,24 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class Admin
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
         $user = $request->user();
 
-        if($user->status == 'admin'){
-            return $next($request);
+        // jika tidak login atau bukan admin -> redirect atau abort
+        if (! $user || ($user->status ?? null) !== 'admin') {
+            if ($request->expectsJson()) {
+                abort(403);
+            }
+            return redirect()->route('home')->with('error', 'Unauthorized');
         }
 
-
+        return $next($request);
     }
 }

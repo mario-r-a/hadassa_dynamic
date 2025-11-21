@@ -42,7 +42,7 @@
                     <a href="{{ route('products.index') }}" class="text-decoration-none">
                         <div class="card h-100 shadow-sm text-center">
                             <div class="p-4 bg-white">
-                                <img src="{{ asset('images/products/' . strtolower(str_replace(' ', '', $category->name)) . '/main/' . $category->featured_product->main_image) }}"
+                                <img src="{{ asset('storage/' . $category->featured_product->main_image) }}"
                                     class="img-fluid mb-3 rounded-3" alt="Foto {{ $category->name }}">
                             </div>
                             <div class="card-body d-flex flex-column pt-3 pb-4">

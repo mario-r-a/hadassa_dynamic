@@ -15,6 +15,11 @@ class ReviewController extends Controller
             return back()->with('error', 'Anda harus login untuk memberikan review.');
         }
 
+        if (Auth::user()->role === 'admin') {
+            return back()->with('error', 'Admin tidak dapat membuat review.');
+        }
+
+
         // Cek apakah user sudah pernah membuat review
         $existing = Review::where('user_id', Auth::id())->first();
         if ($existing) {
@@ -36,4 +41,16 @@ class ReviewController extends Controller
 
         return back()->with('success', 'Terima kasih! Review Anda berhasil dikirim.');
     }
+
+    public function delete(Review $review)
+    {
+        if ($review->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $review->delete();
+
+        return back()->with('success', 'Review telah dihapus.');
+    }
+
 }

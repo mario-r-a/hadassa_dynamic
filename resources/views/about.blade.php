@@ -84,95 +84,105 @@
     </div>
 </section>
 
-@if (auth()->check() && !auth()->user()->review)
+{{-- LOGIC TAMPILAN REVIEW UNTUK USER --}}
+@if(auth()->check() && auth()->user()->status === 'member')
 
-    {{-- FORM REVIEW --}}
-    <div class="card shadow-sm p-4 my-4">
-        <h4 class="mb-3">Tulis Review Anda</h4>
+    {{-- Jika user sudah membuat review --}}
+    @if (auth()->user()->review)
 
-        {{-- Pesan berhasil atau error --}}
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+        <div class="p-4 my-4 rounded-4 shadow-sm"
+             style="background:#e9fff3; border-left:6px solid #28a745; max-width:650px; margin:auto;">
 
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+            <div class="d-flex">
+                <i class="bi bi-check-circle-fill fs-1 text-success me-3"></i>
 
-        <form action="{{ route('review.store') }}" method="POST">
-            @csrf
+                <div>
+                    <h5 class="fw-bold mb-1" style="color:#28a745;">Terima kasih atas review Anda!</h5>
 
-            {{-- Rating --}}
-            <div class="mb-3">
-                <label class="form-label">Rating</label>
-                <select name="rating" class="form-select @error('rating') is-invalid @enderror" required>
-                    <option value="">Pilih Rating</option>
-                    <option value="5">5 - Sangat Puas ★★★★★</option>
-                    <option value="4">4 - Puas ★★★★☆</option>
-                    <option value="3">3 - Cukup ★★★☆☆</option>
-                    <option value="2">2 - Kurang ★★☆☆☆</option>
-                    <option value="1">1 - Buruk ★☆☆☆☆</option>
-                </select>
-                @error('rating')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+                    <p class="text-secondary">
+                        Kami sangat menghargai masukan Anda.  
+                        Jika Anda ingin mengubah pendapat atau memperbarui pengalaman, Anda dapat menghapus review Anda dan membuat yang baru.
+                    </p>
+
+                    {{-- TOMBOL HAPUS REVIEW --}}
+                    <form action="{{ route('review.delete', auth()->user()->review->id) }}"
+                          method="POST"
+                          onsubmit="return confirm('Yakin ingin menghapus review ini?')">
+                        @csrf
+                        @method('DELETE')
+
+                        <button class="btn btn-danger px-4 mt-2">
+                            <i class="bi bi-trash3 me-1"></i> Hapus Review
+                        </button>
+                    </form>
+                </div>
             </div>
+        </div>
 
-            {{-- Content --}}
-            <div class="mb-3">
-                <label class="form-label">Review</label>
-                <textarea name="content" rows="4"
-                    class="form-control @error('content') is-invalid @enderror"
-                    placeholder="Tulis pengalaman Anda..." required>{{ old('content') }}</textarea>
+    @else
 
-                @error('content')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        {{-- FORM REVIEW --}}
+        <div class="card shadow-sm p-4 my-4">
+            <h4 class="mb-3">Tulis Review Anda</h4>
 
-            <button type="submit" class="btn btn-primary">
-                Kirim Review
-            </button>
-        </form>
-    </div>
+            {{-- Pesan berhasil atau error --}}
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
 
-@elseif(auth()->check())
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
 
-    {{-- USER SUDAH PERNAH REVIEW --}}
-    <div class="alert alert-info my-4">
-        Anda sudah memberikan review. Terima kasih!
-    </div>
+            <form action="{{ route('review.store') }}" method="POST">
+                @csrf
 
+                <div class="mb-3">
+                    <label class="form-label">Rating</label>
+                    <select name="rating" class="form-select" required>
+                        <option value="">Pilih Rating</option>
+                        <option value="5">5 - Sangat Puas ★★★★★</option>
+                        <option value="4">4 - Puas ★★★★☆</option>
+                        <option value="3">3 - Cukup ★★★☆☆</option>
+                        <option value="2">2 - Kurang ★★☆☆☆</option>
+                        <option value="1">1 - Buruk ★☆☆☆☆</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Review</label>
+                    <textarea name="content" rows="4" class="form-control"
+                        placeholder="Tulis pengalaman Anda..." required>{{ old('content') }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Kirim Review</button>
+            </form>
+        </div>
+
+    @endif
+
+@elseif(auth()->check() && auth()->user()->status === 'admin')
+    {{-- Admin tidak boleh review --}}
 @else
+    {{-- Reminder login --}}
+    <div class="p-4 rounded-4 shadow-sm my-4 mx-auto"
+        style="background:#f7f9fc;border-left:6px solid #1b2f66;max-width:420px;">
 
-    {{-- REMINDER LOGIN --}}
-<div class="p-4 rounded-4 shadow-sm my-4 mx-auto"
-    style="background: #f7f9fc; border-left: 6px solid #1b2f66; 
-        max-width: 420px;">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-person-lock fs-1 me-3" style="color:#1b2f66;"></i>
 
-    <div class="d-flex align-items-center">
-        <i class="bi bi-person-lock fs-1 me-3" style="color: #1b2f66;"></i>
+            <div>
+                <p class="mb-1 fw-semibold text-center" style="color:#1b2f66;">Anda belum login</p>
+                <p class="text-secondary text-center">Silakan login terlebih dahulu untuk memberikan review.</p>
 
-        <div>
-            <p class="mb-1 fw-semibold text-center" 
-                style="color:#1b2f66; font-size: 1.1rem;">
-                Anda belum login
-            </p>
-
-            <p class="mb-2 text-secondary text-center">
-                Silakan login terlebih dahulu untuk memberikan review.
-            </p>
-
-            <div class="text-center">
-                <a href="{{ route('login') }}" 
-                    class="btn px-4 py-2"
-                    style="background:#1b2f66; color:white; border-radius:12px;">
-                    Login Sekarang
-                </a>
+                <div class="text-center">
+                    <a href="{{ route('login') }}" class="btn px-4 py-2" style="background:#1b2f66;color:white;border-radius:12px;">
+                        Login Sekarang
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endif
 
 @endsection

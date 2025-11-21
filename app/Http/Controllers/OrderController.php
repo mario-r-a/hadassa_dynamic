@@ -3,83 +3,111 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
     /**
-     * MY ORDER PAGE
-     * - tampilkan cart + order history
+     * Tampilkan halaman My Orders + cart.
      */
-   public function index()
+    public function index()
     {
         $user = Auth::user();
         if (! $user) {
             return redirect()->route('login');
         }
 
-        // pastikan ada cart untuk view
-        $cart = \App\Models\Cart::firstOrCreate(['user_id' => $user->id]);
+        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+        $cart->load('items.product');
 
-        $orders = \App\Models\Order::with('orderItems.product')
+        foreach ($cart->items as $item) {
+            if (empty($item->price) && $item->product) {
+                $item->price = $item->product->price;
+            }
+        }
+
+        $cartTotal = $cart->items->sum(function ($i) {
+            $qty = $i->quantity ?? $i->qty ?? 0;
+            $price = $i->price ?? ($i->product->price ?? 0);
+            return $qty * $price;
+        });
+
+        // <-- perbaikan: gunakan relation 'items' yang ada di model Order
+        $orders = Order::with('items.product')
             ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // render view sesuai file yang ada
-        return view('my_order', compact('cart', 'orders'));
+        return view('my_order', compact('cart', 'orders', 'cartTotal'));
     }
 
     /**
-     * CHECKOUT: membuat order dari cart
+     * Proses checkout menggunakan DB::transaction (atomic).
      */
-    public function checkout()
+    public function checkout(Request $request)
     {
         $user = Auth::user();
+        if (! $user) {
+            return redirect()->route('login');
+        }
 
-        $cart = Cart::with('items')->where('user_id', $user->id)->first();
+        Log::info('OrderController::checkout called', ['user_id' => $user->id]);
 
-        if (!$cart || $cart->items->count() === 0) {
+        $cart = Cart::with('items.product')->where('user_id', $user->id)->first();
+
+        if (! $cart || $cart->items->count() === 0) {
+            Log::info('Checkout aborted - empty cart', ['user_id' => $user->id]);
             return redirect()->back()->with('error', 'Keranjang kosong.');
         }
 
-        DB::beginTransaction();
-
         try {
-            // Buat order
-            $order = Order::create([
-                'user_id' => $user->id,
-                'status' => 'pending',
-                'total_price' => $cart->items->sum(fn($i) => $i->quantity * $i->price),
-            ]);
+            $order = null;
 
-            // Create Order Items
-            foreach ($cart->items as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'price' => $item->price,
-                    'subtotal' => $item->quantity * $item->price,
+            DB::transaction(function () use ($cart, $user, &$order) {
+                // hitung total
+                $total = 0;
+                foreach ($cart->items as $ci) {
+                    $qty = $ci->quantity ?? $ci->qty ?? 1;
+                    $price = $ci->price ?? ($ci->product->price ?? 0);
+                    $total += $qty * $price;
+                }
+
+                // buat order
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'order_number' => 'ORD'.time().mt_rand(100,999),
+                    'status' => 'pending',
+                    'total_price' => (int) $total,
                 ]);
-            }
 
-            // Kosongkan cart
-            CartItem::where('cart_id', $cart->id)->delete();
+                // buat order items
+                foreach ($cart->items as $ci) {
+                    $qty = $ci->quantity ?? $ci->qty ?? 1;
+                    $price = $ci->price ?? ($ci->product->price ?? 0);
 
-            DB::commit();
+                    OrderItem::create([
+                        'order_id'   => $order->id,
+                        'product_id' => $ci->product_id,
+                        'quantity'   => (int) $qty,
+                        'price'      => (int) $price,
+                    ]);
+                }
 
-            return redirect()->route('orders.myorder')
-                ->with('success', 'Checkout berhasil! Pesanan sedang diproses.');
+                // kosongkan cart (hapus item)
+                CartItem::where('cart_id', $cart->id)->delete();
+            });
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Checkout gagal.');
+            Log::info('Checkout succeeded', ['user_id' => $user->id, 'order_id' => $order->id ?? null]);
+            return redirect()->route('orders.my')->with('success', 'Checkout berhasil! Pesanan sedang diproses.');
+        } catch (\Throwable $e) {
+            Log::error('Checkout failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->back()->with('error', 'Checkout gagal. Silakan coba lagi.');
         }
     }
 }
